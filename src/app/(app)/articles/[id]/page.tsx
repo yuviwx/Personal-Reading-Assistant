@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, Clock, ExternalLink, Tag } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Circle, Clock, ExternalLink, Tag } from 'lucide-react';
 import type { Article } from '@/lib/types';
 import { getArticleById, updateArticle } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
@@ -123,7 +123,7 @@ export default function ArticlePage() {
             </a>
           </Button>
           <Button onClick={handleToggleReadStatus} className={!article.isRead ? 'bg-accent hover:bg-accent/90' : ''}>
-            <CheckCircle className="mr-2 h-4 w-4" />
+            {article.isRead ? <Circle className="mr-2 h-4 w-4" /> : <CheckCircle className="mr-2 h-4 w-4" />}
             {article.isRead ? 'Mark as Unread' : 'Mark as Read'}
           </Button>
         </CardFooter>
