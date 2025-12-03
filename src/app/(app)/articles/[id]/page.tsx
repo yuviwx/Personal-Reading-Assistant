@@ -123,7 +123,7 @@ export default function ArticlePage() {
             </a>
           </Button>
           <Button onClick={handleToggleReadStatus} className={!article.isRead ? 'bg-accent hover:bg-accent/90' : ''}>
-            {article.isRead ? <Circle className="mr-2 h-4 w-4" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+            {article.isRead ? <CheckCircle className="mr-2 h-4 w-4" /> : <Circle className="mr-2 h-4 w-4" />}
             {article.isRead ? 'Mark as Unread' : 'Mark as Read'}
           </Button>
         </CardFooter>
