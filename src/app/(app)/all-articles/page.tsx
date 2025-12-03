@@ -3,17 +3,30 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { ArrowLeft, BookOpen, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, BookOpen, Eye, EyeOff, Trash2 } from 'lucide-react';
 import type { Article } from '@/lib/types';
-import { getArticles, updateArticle } from '@/lib/storage';
+import { getArticles, updateArticle, deleteArticle } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useToast } from '@/hooks/use-toast';
 
 export default function AllArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     // This runs only on the client
@@ -31,6 +44,15 @@ export default function AllArticlesPage() {
         prevArticles.map(a => a.id === articleId ? updatedArticle : a)
       );
     }
+  };
+
+  const handleDeleteArticle = (articleId: string) => {
+    deleteArticle(articleId);
+    setArticles(prevArticles => prevArticles.filter(a => a.id !== articleId));
+    toast({
+        title: "Article Deleted",
+        description: "The article has been removed from your library.",
+    })
   };
 
   return (
@@ -59,7 +81,7 @@ export default function AllArticlesPage() {
                   <TableHead>Topic</TableHead>
                   <TableHead>Time (min)</TableHead>
                   <TableHead>Added On</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -86,13 +108,34 @@ export default function AllArticlesPage() {
                       <TableCell>{article.topic ? <Badge variant="outline">{article.topic}</Badge> : 'N/A'}</TableCell>
                       <TableCell>{article.estimatedTime || 'N/A'}</TableCell>
                       <TableCell>{format(new Date(article.createdAt), 'MMM d, yyyy')}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right space-x-2">
                         <Button asChild variant="ghost" size="sm">
                           <Link href={`/articles/${article.id}`}>
-                            <BookOpen className="mr-2 h-4 w-4"/>
-                            View
+                            <BookOpen className="h-4 w-4"/>
                           </Link>
                         </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the article
+                                from your local storage.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteArticle(article.id)}>
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </TableCell>
                     </TableRow>
                   ))

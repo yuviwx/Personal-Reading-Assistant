@@ -77,6 +77,12 @@ export const updateArticle = (id: string, updates: Partial<Omit<Article, 'id'>>)
   return updatedArticle;
 };
 
+export const deleteArticle = (id: string): void => {
+  const articles = getArticles();
+  const updatedArticles = articles.filter(article => article.id !== id);
+  saveArticles(updatedArticles);
+}
+
 export const getUniqueTopics = (): string[] => {
   const articles = getArticles();
   const topics = new Set<string>();
