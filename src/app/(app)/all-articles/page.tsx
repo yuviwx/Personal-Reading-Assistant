@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { ArrowLeft, BookOpen, Eye, EyeOff } from 'lucide-react';
 import type { Article } from '@/lib/types';
-import { getArticles } from '@/lib/storage';
+import { getArticles, updateArticle } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -20,6 +20,18 @@ export default function AllArticlesPage() {
     const allArticles = getArticles();
     setArticles(allArticles);
   }, []);
+
+  const handleToggleReadStatus = (articleId: string) => {
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+
+    const updatedArticle = updateArticle(articleId, { isRead: !article.isRead });
+    if (updatedArticle) {
+      setArticles(prevArticles => 
+        prevArticles.map(a => a.id === articleId ? updatedArticle : a)
+      );
+    }
+  };
 
   return (
     <div className="container py-8">
@@ -56,15 +68,17 @@ export default function AllArticlesPage() {
                     <TableRow key={article.id}>
                       <TableCell>
                         <Tooltip>
-                          <TooltipTrigger>
-                            {article.isRead ? (
-                               <Badge variant="secondary" className="flex items-center gap-1.5"><EyeOff className="h-3.5 w-3.5" /> Read</Badge>
-                            ) : (
-                               <Badge variant="default" className="flex items-center gap-1.5"><Eye className="h-3.5 w-3.5" /> Unread</Badge>
-                            )}
+                          <TooltipTrigger asChild>
+                             <button onClick={() => handleToggleReadStatus(article.id)}>
+                              {article.isRead ? (
+                                <Badge variant="secondary" className="flex items-center gap-1.5 cursor-pointer"><EyeOff className="h-3.5 w-3.5" /> Read</Badge>
+                              ) : (
+                                <Badge variant="default" className="flex items-center gap-1.5 cursor-pointer"><Eye className="h-3.5 w-3.5" /> Unread</Badge>
+                              )}
+                             </button>
                           </TooltipTrigger>
                            <TooltipContent>
-                            <p>{article.isRead ? "You've read this article." : "This article is unread."}</p>
+                            <p>Click to mark as {article.isRead ? "'unread'" : "'read'"}.</p>
                           </TooltipContent>
                         </Tooltip>
                       </TableCell>
