@@ -2,14 +2,16 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { BookOpen, Clock, Tag, Search, XCircle, Library } from 'lucide-react';
+import { BookOpen, Clock, Tag, Search, XCircle, Library, BrainCircuit, Loader2 } from 'lucide-react';
 import type { Article } from '@/lib/types';
-import { getArticles, getUniqueTopics } from '@/lib/storage';
+import { getArticles, getUniqueTopics, updateArticle } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { generateMetadataAction } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
 
 export default function GetArticlePage() {
   const [allArticles, setAllArticles] = useState<Article[]>([]);
@@ -19,6 +21,9 @@ export default function GetArticlePage() {
   const [selectedTopic, setSelectedTopic] = useState<string>('all');
   const [availableTime, setAvailableTime] = useState<string>('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [isGeneratingId, setIsGeneratingId] = useState<string | null>(null);
+  const { toast } = useToast();
+
 
   useEffect(() => {
     // This runs only on the client
@@ -52,6 +57,37 @@ export default function GetArticlePage() {
     setAvailableTime('');
     setSuggestedArticles([]);
     setHasSearched(false);
+  }
+
+  const handleGenerateDetails = async (article: Article) => {
+    if (!article.url) return;
+
+    setIsGeneratingId(article.id);
+    const result = await generateMetadataAction({ url: article.url });
+    
+    if (result.success && result.data) {
+      const updated = updateArticle(article.id, {
+        headline: result.data.headline,
+        topic: result.data.topic,
+        estimatedTime: result.data.estimatedReadingTime,
+        summary: result.data.summary,
+      });
+
+      if (updated) {
+        setAllArticles(prev => prev.map(a => a.id === article.id ? updated : a));
+        toast({
+          title: 'Details Generated!',
+          description: `Successfully updated "${updated.headline}".`,
+        });
+      }
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Generation Failed',
+        description: result.error || 'Could not generate details for this article.',
+      });
+    }
+    setIsGeneratingId(null);
   }
 
   const articlesToShow = hasSearched ? suggestedArticles : unreadArticles;
@@ -117,38 +153,58 @@ export default function GetArticlePage() {
 
           <div className="space-y-4">
             {articlesToShow.length > 0 ? (
-              articlesToShow.map(article => (
-                <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                      <CardTitle className="text-lg font-headline">{article.headline || 'Untitled Article'}</CardTitle>
-                       <div className="flex items-center space-x-4 text-sm text-muted-foreground pt-2">
-                          {article.topic && (
-                            <div className="flex items-center">
-                              <Tag className="mr-1 h-4 w-4" />
-                              <Badge variant="secondary">{article.topic}</Badge>
-                            </div>
-                          )}
-                          {article.estimatedTime && (
-                            <div className="flex items-center">
-                              <Clock className="mr-1 h-4 w-4" />
-                              <span>{article.estimatedTime} min read</span>
-                            </div>
-                          )}
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-foreground/80 line-clamp-2">{article.summary || 'No summary available.'}</p>
-                    </CardContent>
-                     <CardFooter>
-                      <Button asChild variant="default" size="sm">
-                        <Link href={`/articles/${article.id}`}>
-                          <BookOpen className="mr-2 h-4 w-4"/>
-                          Read Article
-                        </Link>
-                      </Button>
-                    </CardFooter>
-                </Card>
-              ))
+              articlesToShow.map(article => {
+                const hasMissingDetails = !article.headline || !article.topic || !article.summary || !article.estimatedTime;
+                const isGenerating = isGeneratingId === article.id;
+
+                return (
+                  <Card key={article.id} className="hover:shadow-lg transition-shadow duration-300">
+                      <CardHeader>
+                        <CardTitle className="text-lg font-headline">{article.headline || 'Untitled Article'}</CardTitle>
+                         <div className="flex items-center space-x-4 text-sm text-muted-foreground pt-2">
+                            {article.topic && article.topic !== 'General' ? (
+                              <div className="flex items-center">
+                                <Tag className="mr-1 h-4 w-4" />
+                                <Badge variant="secondary">{article.topic}</Badge>
+                              </div>
+                            ) : null}
+                            {article.estimatedTime ? (
+                              <div className="flex items-center">
+                                <Clock className="mr-1 h-4 w-4" />
+                                <span>{article.estimatedTime} min read</span>
+                              </div>
+                            ) : null}
+                          </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-foreground/80 line-clamp-2">{article.summary || 'No summary available.'}</p>
+                      </CardContent>
+                       <CardFooter className="flex gap-2">
+                        <Button asChild variant="default" size="sm">
+                          <Link href={`/articles/${article.id}`}>
+                            <BookOpen className="mr-2 h-4 w-4"/>
+                            Read Article
+                          </Link>
+                        </Button>
+                        {hasMissingDetails && (
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleGenerateDetails(article)}
+                            disabled={isGenerating}
+                          >
+                             {isGenerating ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                              <BrainCircuit className="mr-2 h-4 w-4" />
+                            )}
+                            Auto-fill with AI
+                          </Button>
+                        )}
+                      </CardFooter>
+                  </Card>
+                )
+              })
             ) : (
               <Card className="text-center py-12 border-dashed">
                  <CardContent className="flex flex-col items-center">
