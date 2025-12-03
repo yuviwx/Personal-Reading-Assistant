@@ -27,14 +27,17 @@ export default function ArticlePage() {
     }
   }, [id]);
 
-  const handleMarkAsRead = () => {
-    if (id && article && !article.isRead) {
-      const updatedArticle = updateArticle(id, { isRead: true });
+  const handleToggleReadStatus = () => {
+    if (id && article) {
+      const newStatus = !article.isRead;
+      const updatedArticle = updateArticle(id, { isRead: newStatus });
       if (updatedArticle) {
         setArticle(updatedArticle);
         toast({
-          title: 'Marked as Read',
-          description: `"${updatedArticle.headline || 'Article'}" won't be suggested again.`,
+          title: `Marked as ${newStatus ? 'Read' : 'Unread'}`,
+          description: newStatus 
+            ? `"${updatedArticle.headline || 'Article'}" won't be suggested again.`
+            : `"${updatedArticle.headline || 'Article'}" will now appear in suggestions.`,
         });
       }
     }
@@ -119,9 +122,9 @@ export default function ArticlePage() {
               Open Original Article
             </a>
           </Button>
-          <Button onClick={handleMarkAsRead} disabled={article.isRead} className={!article.isRead ? 'bg-accent hover:bg-accent/90' : ''}>
+          <Button onClick={handleToggleReadStatus} className={!article.isRead ? 'bg-accent hover:bg-accent/90' : ''}>
             <CheckCircle className="mr-2 h-4 w-4" />
-            {article.isRead ? 'Already Read' : 'Mark as Read'}
+            {article.isRead ? 'Mark as Unread' : 'Mark as Read'}
           </Button>
         </CardFooter>
       </Card>
