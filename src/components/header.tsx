@@ -6,7 +6,7 @@ import { Logo } from './logo';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { PlusCircle, Search, Menu, BookMarked } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTrigger, SheetClose } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from './ui/sheet';
 
 export function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -44,6 +44,7 @@ export function Header() {
             <SheetContent side="right">
               <SheetHeader>
                 <Logo />
+                <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
               </SheetHeader>
               <nav className="mt-8 flex flex-col gap-4">
                 <SheetClose asChild>
