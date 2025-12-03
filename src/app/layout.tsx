@@ -3,7 +3,7 @@ import {Toaster} from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Offline Article Saver',
+  title: 'Personal Reading Assistant',
   description: 'Save articles and videos for offline reading.',
 };
 
