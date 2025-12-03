@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -39,19 +38,21 @@ const formSchema = z.object({
   summary: z.string().optional(),
 });
 
+const defaultFormValues = {
+  url: '',
+  headline: '',
+  topic: '',
+  summary: '',
+  estimatedTime: undefined,
+};
+
 export default function AddArticlePage() {
-  const router = useRouter();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      url: '',
-      headline: '',
-      topic: '',
-      summary: '',
-    },
+    defaultValues: defaultFormValues,
   });
 
   const handleGenerate = async () => {
@@ -89,7 +90,7 @@ export default function AddArticlePage() {
       title: 'Article Saved!',
       description: 'Your article has been saved locally.',
     });
-    router.push('/get');
+    form.reset(defaultFormValues);
   }
 
   return (
