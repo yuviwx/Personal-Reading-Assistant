@@ -16,7 +16,7 @@ export default function GetArticlePage() {
   const [suggestedArticles, setSuggestedArticles] = useState<Article[]>([]);
   const [topics, setTopics] = useState<string[]>([]);
   
-  const [selectedTopic, setSelectedTopic] = useState<string>('');
+  const [selectedTopic, setSelectedTopic] = useState<string>('all');
   const [availableTime, setAvailableTime] = useState<string>('');
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -33,7 +33,7 @@ export default function GetArticlePage() {
   const handleSearch = () => {
     let filtered = unreadArticles;
 
-    if (selectedTopic) {
+    if (selectedTopic && selectedTopic !== 'all') {
       filtered = filtered.filter(article => article.topic === selectedTopic);
     }
     if (availableTime) {
@@ -48,7 +48,7 @@ export default function GetArticlePage() {
   };
   
   const clearFilters = () => {
-    setSelectedTopic('');
+    setSelectedTopic('all');
     setAvailableTime('');
     setSuggestedArticles([]);
     setHasSearched(false);
@@ -73,7 +73,7 @@ export default function GetArticlePage() {
                     <SelectValue placeholder="All Topics" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Topics</SelectItem>
+                    <SelectItem value="all">All Topics</SelectItem>
                     {topics.map(topic => (
                       <SelectItem key={topic} value={topic}>{topic}</SelectItem>
                     ))}
@@ -95,7 +95,7 @@ export default function GetArticlePage() {
                 <Search className="mr-2 h-4 w-4" />
                 Find Article
               </Button>
-              {(hasSearched || selectedTopic || availableTime) && (
+              {(hasSearched || selectedTopic !== 'all' || availableTime) && (
                  <Button variant="ghost" onClick={clearFilters}>
                     <XCircle className="mr-2 h-4 w-4" />
                     Clear Filters
