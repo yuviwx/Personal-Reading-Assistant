@@ -20,7 +20,10 @@ export const getArticles = (): Article[] => {
   if (!articlesJson) return [];
 
   try {
-    const articles = JSON.parse(articlesJson) as Article[];
+    const articles = (JSON.parse(articlesJson) as Article[]).map(article => ({
+        ...article,
+        topic: article.topic || 'General'
+    }));
     // Sort by creation date, newest first
     return articles.sort((a, b) => b.createdAt - a.createdAt);
   } catch (error) {
@@ -40,7 +43,7 @@ export const addArticle = (newArticleData: Partial<Omit<Article, 'id' | 'isRead'
   const articles = getArticles();
   const newArticle: Article = {
     headline: newArticleData.headline || '',
-    topic: newArticleData.topic || '',
+    topic: newArticleData.topic || 'General',
     summary: newArticleData.summary || '',
     estimatedTime: newArticleData.estimatedTime || 0,
     ...newArticleData,
@@ -56,7 +59,14 @@ export const addArticle = (newArticleData: Partial<Omit<Article, 'id' | 'isRead'
 
 export const getArticleById = (id: string): Article | undefined => {
   const articles = getArticles();
-  return articles.find(article => article.id === id);
+  const article = articles.find(article => article.id === id);
+  if (article && !article.topic) {
+    return {
+        ...article,
+        topic: 'General'
+    }
+  }
+  return article;
 };
 
 export const updateArticle = (id: string, updates: Partial<Omit<Article, 'id'>>): Article | undefined => {
@@ -89,6 +99,8 @@ export const getUniqueTopics = (): string[] => {
   articles.forEach(article => {
     if (article.topic) {
       topics.add(article.topic);
+    } else {
+      topics.add('General');
     }
   });
   return Array.from(topics).sort();
