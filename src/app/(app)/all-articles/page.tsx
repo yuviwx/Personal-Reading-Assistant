@@ -108,7 +108,7 @@ export default function AllArticlesPage() {
                       <TableCell>{article.topic ? <Badge variant="outline">{article.topic}</Badge> : 'N/A'}</TableCell>
                       <TableCell>{article.estimatedTime || 'N/A'}</TableCell>
                       <TableCell>{format(new Date(article.createdAt), 'MMM d, yyyy')}</TableCell>
-                      <TableCell className="text-right space-x-2">
+                      <TableCell className="flex justify-center items-center space-x-2">
                         <Button asChild variant="ghost" size="sm">
                           <Link href={`/articles/${article.id}`}>
                             <BookOpen className="h-4 w-4"/>
