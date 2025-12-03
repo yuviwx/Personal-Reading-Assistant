@@ -81,7 +81,7 @@ export default function AllArticlesPage() {
                   <TableHead>Topic</TableHead>
                   <TableHead>Time (min)</TableHead>
                   <TableHead>Added On</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="text-center pr-12">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
