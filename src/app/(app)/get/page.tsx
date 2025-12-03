@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { BookOpen, Clock, Tag, Search, XCircle } from 'lucide-react';
+import { BookOpen, Clock, Tag, Search, XCircle, Library } from 'lucide-react';
 import type { Article } from '@/lib/types';
 import { getArticles, getUniqueTopics } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
@@ -101,6 +101,12 @@ export default function GetArticlePage() {
                     Clear Filters
                 </Button>
               )}
+               <Button variant="secondary" asChild>
+                  <Link href="/all-articles">
+                    <Library className="mr-2 h-4 w-4" />
+                    View Full Library
+                  </Link>
+              </Button>
             </CardFooter>
           </Card>
         </div>
