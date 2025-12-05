@@ -25,10 +25,15 @@ export function Header() {
               <PlusCircle className="mr-2 h-4 w-4" /> Add Article
             </Link>
           </Button>
-          <Button variant="outline" asChild>
-            <Link href="/get">
-              <Search className="mr-2 h-4 w-4" /> Get Article
-            </Link>
+           <Button variant="secondary" asChild>
+              <Link href="/get">
+                <Search className="mr-2 h-4 w-4" /> Get Article
+              </Link>
+          </Button>
+           <Button variant="outline" asChild>
+              <Link href="/all-articles">
+                <BookMarked className="mr-2 h-4 w-4" /> All Articles
+              </Link>
           </Button>
         </nav>
 

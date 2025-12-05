@@ -1,12 +1,19 @@
 import type {Metadata} from 'next';
 import {Toaster} from '@/components/ui/toaster';
 import './globals.css';
+import { Heebo } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'Personal Reading Assistant',
   description: 'Save articles and videos for offline reading.',
   manifest: '/manifest.json',
 };
+
+const heebo = Heebo({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700'],
+  variable: '--font-body',
+});
 
 export default function RootLayout({
   children,
@@ -15,15 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="font-body antialiased min-h-screen bg-background">
+      <body className={`${heebo.variable} font-body antialiased min-h-screen bg-background`}>
         {children}
         <Toaster />
       </body>
