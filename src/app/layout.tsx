@@ -5,6 +5,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Personal Reading Assistant',
   description: 'Save articles and videos for offline reading.',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
