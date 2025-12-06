@@ -55,7 +55,7 @@ export default function Home() {
               <span className="sr-only">Open menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col">
+          <SheetContent side="right" className="flex flex-col">
             <SheetHeader>
               <Logo />
             </SheetHeader>
