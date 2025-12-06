@@ -1,14 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, BookOpen, Library, Menu } from 'lucide-react';
+import { Plus, BookOpen, Library, Menu, Home as HomeIcon } from 'lucide-react';
 import Link from 'next/link';
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
   SheetTrigger,
   SheetClose,
 } from '@/components/ui/sheet';
 import { MainLogo } from '@/components/main-logo';
+import { Logo } from '@/components/logo';
 
 const NavLink = ({
   href,
@@ -53,36 +55,49 @@ export default function Home() {
               <span className="sr-only">Open menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left">
-            <nav className="mt-8 flex flex-col gap-4">
-              <SheetClose asChild>
+          <SheetContent side="left" className="flex flex-col">
+            <SheetHeader>
+              <Logo />
+            </SheetHeader>
+            <nav className="mt-8 flex flex-col gap-2 flex-1">
                 <Link
-                  href="/add"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                  href="/"
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-primary-foreground bg-primary transition-all"
                 >
-                  <Plus className="h-5 w-5" />
-                  Add Article
+                  <HomeIcon className="h-5 w-5" />
+                  Home
                 </Link>
-              </SheetClose>
-              <SheetClose asChild>
-                <Link
-                  href="/get"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <BookOpen className="h-5 w-5" />
-                  Get Article
-                </Link>
-              </SheetClose>
-              <SheetClose asChild>
-                <Link
-                  href="/all-articles"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                >
-                  <Library className="h-5 w-5" />
-                  All Articles
-                </Link>
-              </SheetClose>
+                <SheetClose asChild>
+                  <Link
+                    href="/add"
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-muted-foreground transition-all hover:text-primary"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Add Article
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link
+                    href="/get"
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-muted-foreground transition-all hover:text-primary"
+                  >
+                    <BookOpen className="h-5 w-5" />
+                    Get Article
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link
+                    href="/all-articles"
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-muted-foreground transition-all hover:text-primary"
+                  >
+                    <Library className="h-5 w-5" />
+                    Library
+                  </Link>
+                </SheetClose>
             </nav>
+            <div className="mt-auto pb-4 text-center text-sm text-muted-foreground">
+                <p>Works fully offline</p>
+            </div>
           </SheetContent>
         </Sheet>
       </header>
