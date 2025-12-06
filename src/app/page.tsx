@@ -47,7 +47,7 @@ const NavLink = ({
 export default function Home() {
   return (
     <>
-      <header className="fixed top-0 left-0 p-4 z-50">
+      <header className="fixed top-0 right-0 p-4 z-50">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="bg-card rounded-full shadow-md">
