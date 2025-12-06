@@ -16,7 +16,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   output: "standalone",
-  swcMinify: true,
   images: {
     remotePatterns: [
       {
