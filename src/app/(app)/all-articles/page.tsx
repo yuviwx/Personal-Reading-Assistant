@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { ArrowLeft, BookOpen, Eye, EyeOff, Trash2, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Eye, EyeOff, Trash2, Sparkles, Loader2, Pencil } from 'lucide-react';
 import type { Article } from '@/lib/types';
 import { getArticles, updateArticle, deleteArticle, getUniqueTopics, saveArticles } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
@@ -182,6 +182,11 @@ export default function AllArticlesPage() {
                         <Button asChild variant="ghost" size="sm">
                           <Link href={`/articles/${article.id}`}>
                             <BookOpen className="h-4 w-4"/>
+                          </Link>
+                        </Button>
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/edit/${article.id}`}>
+                            <Pencil className="h-4 w-4" />
                           </Link>
                         </Button>
                         <AlertDialog>

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, BookOpen, Library, Menu, Home as HomeIcon } from 'lucide-react';
+import { Plus, BookOpen, Library, Menu } from 'lucide-react';
 import Link from 'next/link';
 import {
   Sheet,
@@ -60,13 +60,6 @@ export default function Home() {
               <Logo />
             </SheetHeader>
             <nav className="mt-8 flex flex-col gap-2 flex-1">
-                <Link
-                  href="/"
-                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-primary-foreground bg-primary transition-all"
-                >
-                  <HomeIcon className="h-5 w-5" />
-                  Home
-                </Link>
                 <SheetClose asChild>
                   <Link
                     href="/add"
