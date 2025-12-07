@@ -24,7 +24,7 @@ const unifyTopicsPrompt = ai.definePrompt({
   output: {schema: UnifyTopicsOutputSchema},
   prompt: `You are an AI assistant that helps organize article topics. Given a list of topics, your task is to unify similar or related topics into a single, more general topic.
 
-  For example, if you are given the topics: ["AI", "Artificial Intelligence", "Machine Learning", "Tech", "Technology"], a good unification would be:
+  For example, if you are given the topics: "AI", "Artificial Intelligence", "Machine Learning", "Tech", "Technology", a good unification would be:
   {
     "AI": "Artificial Intelligence",
     "Artificial Intelligence": "Artificial Intelligence",
@@ -35,7 +35,7 @@ const unifyTopicsPrompt = ai.definePrompt({
 
   Only unify topics that are very similar. If a topic is unique, it should map to itself. Return a JSON object where keys are the original topics and values are the new, unified topics.
 
-  Topics to unify: {{{jsonStringify topics}}}
+  Topics to unify: {{#each topics}}"{{this}}"{{#unless @last}}, {{/unless}}{{/each}}
   `,
 });
 
