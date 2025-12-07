@@ -1,7 +1,8 @@
 "use server";
 
 import { generateArticleMetadata, GenerateArticleMetadataInput } from '@/ai/flows/generate-article-metadata';
-import { unifyTopics, UnifyTopicsInput } from '@/ai/flows/unify-topics';
+import { unifyTopics } from '@/ai/flows/unify-topics';
+import { UnifyTopicsInput } from '@/ai/flows/unify-topics-types';
 
 export async function generateMetadataAction(
   input: GenerateArticleMetadataInput
