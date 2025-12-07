@@ -7,33 +7,36 @@ const withPWA = require("next-pwa")({
   disable: process.env.NODE_ENV === "development",
   runtimeCaching: [
     {
+      // Cache pages with a Stale-While-Revalidate strategy
       urlPattern: ({ request }) => request.mode === "navigate",
-      handler: "NetworkFirst",
+      handler: "StaleWhileRevalidate",
       options: {
-        cacheName: "pages-cache",
-        networkTimeoutSeconds: 3,
-        expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 7 },
-      }
+        cacheName: "pages",
+        expiration: {
+          maxEntries: 60,
+          maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        },
+      },
     },
     {
+      // Cache static assets with a CacheFirst strategy
       urlPattern: ({ request }) =>
-        ["script", "style", "image", "font"].includes(request.destination),
+        ["style", "script", "font", "image"].includes(request.destination),
       handler: "CacheFirst",
       options: {
-        cacheName: "static-cache",
-        expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
-      }
+        cacheName: "static-assets",
+        expiration: {
+          maxEntries: 200,
+          maxAgeSeconds: 365 * 24 * 60 * 60, // 1 Year
+        },
+      },
     },
     {
+      // API calls are not cached
       urlPattern: ({ url }) => url.pathname.startsWith("/api"),
-      handler: "NetworkFirst",
-      options: {
-        cacheName: "api-cache",
-        networkTimeoutSeconds: 3,
-        expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 },
-      }
-    }
-  ]
+      handler: "NetworkOnly",
+    },
+  ],
 });
 
 const nextConfig = {

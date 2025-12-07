@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { ArrowLeft, BookOpen, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Eye, EyeOff, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import type { Article } from '@/lib/types';
-import { getArticles, updateArticle, deleteArticle } from '@/lib/storage';
+import { getArticles, updateArticle, deleteArticle, getUniqueTopics, saveArticles } from '@/lib/storage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,9 +23,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from '@/hooks/use-toast';
+import { unifyTopicsAction } from '@/app/actions';
 
 export default function AllArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [isUnifying, setIsUnifying] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -55,6 +57,58 @@ export default function AllArticlesPage() {
     })
   };
 
+  const handleUnifyTopics = async () => {
+    const topics = getUniqueTopics();
+    if (topics.length < 2) {
+        toast({
+            title: "Not enough topics",
+            description: "You need at least two different topics to unify them.",
+        });
+        return;
+    }
+    
+    setIsUnifying(true);
+    const result = await unifyTopicsAction({ topics });
+    setIsUnifying(false);
+
+    if (result.success && result.data) {
+        const topicMap = result.data;
+        const allArticles = getArticles();
+        let updatedCount = 0;
+
+        const updatedArticles = allArticles.map(article => {
+            const oldTopic = article.topic || 'General';
+            const newTopic = topicMap[oldTopic];
+            if (newTopic && newTopic !== oldTopic) {
+                updatedCount++;
+                return { ...article, topic: newTopic };
+            }
+            return article;
+        });
+
+        if (updatedCount > 0) {
+            saveArticles(updatedArticles);
+            setArticles(updatedArticles);
+            toast({
+                title: "Topics Unified!",
+                description: `${updatedCount} article(s) were updated with new topics.`,
+            });
+        } else {
+             toast({
+                title: "No changes",
+                description: "The AI didn't find any topics to unify.",
+            });
+        }
+
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Unification Failed",
+            description: result.error || 'Could not unify topics at this time.',
+        });
+    }
+  };
+
   return (
     <div className="container py-8">
       <div className="mb-4 flex items-center justify-between">
@@ -68,8 +122,24 @@ export default function AllArticlesPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>All Articles ({articles.length})</CardTitle>
-          <CardDescription>A complete list of all your saved articles, both read and unread.</CardDescription>
+            <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle>All Articles ({articles.length})</CardTitle>
+                  <CardDescription>A complete list of all your saved articles, both read and unread.</CardDescription>
+                </div>
+                <Button
+                    variant="outline"
+                    onClick={handleUnifyTopics}
+                    disabled={isUnifying || articles.length < 2}
+                >
+                    {isUnifying ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                        <Sparkles className="mr-2 h-4 w-4" />
+                    )}
+                    Unify Topics
+                </Button>
+            </div>
         </CardHeader>
         <CardContent>
           <TooltipProvider>
